@@ -1,25 +1,50 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import Sidebar from "react-sidebar";
+import { Button, Glyphicon } from "react-bootstrap";
+import "./App.css";
+
+const mql = window.matchMedia(`(min-width: 800px)`);
 
 class App extends Component {
+  state = {
+    sidebarDocked: mql.matches,
+  sidebarOpen: true
+};
+
+mediaQueryChanged = this.mediaQueryChanged.bind(this);
+ onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
+
+ componentWillMount() {
+   mql.addListener(this.mediaQueryChanged);
+ }
+
+  componentWillUnmount() {
+   this.state.mql.removeListener(this.mediaQueryChanged);
+ }
+
+ onSetSidebarOpen(open) {
+  this.setState({ sidebarOpen: open });
+}
+
+mediaQueryChanged() {
+  this.setState({ sidebarDocked: mql.matches, sidebarOpen: false });
+}
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="app">
+      <Sidebar
+        sidebar={<p>Sidebar content</p>}
+        open={this.state.sidebarOpen}
+        onSetOpen={this.onSetSidebarOpen}
+        docked={this.state.sidebarDocked}
+        sidebarClassName={'sidebar'}
+        styles={{ sidebar: { background: "#1e2129" } }}
+      >
+      <Button className="sidebar-button" onClick={() => this.onSetSidebarOpen(true)}>
+        <Glyphicon glyph="align-justify" />
+      </Button>
+      </Sidebar>
       </div>
     );
   }
