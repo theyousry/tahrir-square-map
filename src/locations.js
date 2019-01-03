@@ -5,7 +5,8 @@ export  const locations = [
             lat: 30.046370,
             lng: 31.224340
         },
-        venueId: "4c3c3e06a9509c74150c395b"
+        venueId: "4c3c3e06a9509c74150c395b",
+        venueDetails: ""
     },
     {
         title: "The Nile River",
@@ -13,7 +14,8 @@ export  const locations = [
             lat: 30.04599026629391,
             lng: 31.229968070983883
         },
-        venueId: "4dc530dcfa76d685cdd93f94"
+        venueId: "4dc530dcfa76d685cdd93f94",
+        venueDetails: ""
     },
     {
         title: "The Egyptian Museum",
@@ -21,7 +23,8 @@ export  const locations = [
             lat: 30.047902,
             lng: 31.233564
         },
-        venueId: "4b653727f964a5203ee92ae3"
+        venueId: "4b653727f964a5203ee92ae3",
+        venueDetails: ""
     },
     {
         title: "The Nile Ritz-Carlton",
@@ -29,7 +32,8 @@ export  const locations = [
             lat: 30.0459653012245,
             lng: 31.232135764875625
         },
-        venueId: "50159fd8e4b07f20b3e58d35"
+        venueId: "50159fd8e4b07f20b3e58d35",
+        venueDetails: ""
     },
     {
         title: "Tahrir Square",
@@ -37,7 +41,8 @@ export  const locations = [
             lat: 30.044420727931577,
             lng: 31.235707998275757
         },
-        venueId: "4cb48a7e1463a143dfb7bba9"
+        venueId: "4cb48a7e1463a143dfb7bba9",
+        venueDetails: ""
     },
     {
         title: "Cairo Opera House",
@@ -45,6 +50,7 @@ export  const locations = [
             lat: 30.042497,
             lng: 31.224415
         },
-        venueId: "4c963c5303413704fd8982ef"
+        venueId: "4c963c5303413704fd8982ef",
+        venueDetails: ""
     }
 ]

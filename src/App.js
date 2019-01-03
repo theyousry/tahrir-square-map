@@ -9,13 +9,14 @@ import { locations } from "./locations";
 
 const mql = window.matchMedia(`(min-width: 800px)`);
 let map = {};
-let markersArray = [];
 
 class App extends Component {
   state = {
     sidebarDocked: mql.matches,
   sidebarOpen: true,
-  markers: []
+  markers: [],
+  locations: [],
+  allLocations: []
 };
 
 mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -44,15 +45,10 @@ mediaQueryChanged() {
 
 componentWillReceiveProps({ isScriptLoadSucceed }) {
   if(isScriptLoadSucceed) {
+    this.getInfoWindowsData();
     this.createMap();
       this.addMarkers();
-      this.setState({
-        markers: markersArray
-      })
     }
-  }
-  getUpdatedMarkers(updatedMarkers) {
-    console.log(updatedMarkers);
   }
 
   createMap() {
@@ -62,31 +58,114 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
       mapTypeControl: false
     });
    }
+
+   // gets all locations data from foursquare
+  getInfoWindowData(marker) {
+    locations.forEach((location) => {
+   /*fetch(`https://api.foursquare.com/v2/venues/${marker.venueId}` +
+         `?client_id=EZEY30HLA40SXDIRAOP5K0J5F0LBCCWIA4COVDR51ZZ13CHJ` +
+         `&client_secret=Z0CF3Y0N03BCPW44OVF4NTFVT3IQLF1H5KXBTX0PR23KNY4L` +
+         `&v=20190103`)
+         .then(response => response.json())
+         .then(data => {
+           if (data.meta.code === 200) {
+             //location.venueDetails = data;
+             console.log(data)
+           }
+         }).catch(error => {
+           console.log(error);
+         }) */
+
+         var data = {
+           bestPhoto: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Cairo_opera_house.jpg",
+           rating: 8,
+           likes: 1000,
+           moreInfo: "https://en.wikipedia.org/wiki/Cairo_Opera_House"
+         }
+         data = JSON.parse(data);
+         location.venueDetails = data;
+     })
+     this.setState({
+       allLocations: locations
+     }, () => {
+       console.log(this.state.allLocations)
+     });
+   }
+
   addMarkers() {
-     for (let i = 0; i < locations.length; i++) {
+    // delete all existing markers; set state markers to empty array
+    if (this.state.markers.length > 0) {
+      this.state.markers.forEach((marker) => {
+        marker.setMap(null);
+      })
+      this.setState({
+        markers: []
+      })
+    }
+
+    //create markers for given locations
+    if(this.state.locations.length > 0) {
+      this.createMarkers(this.state.locations);
+    }
+
+    else {
+      this.createMarkers(locations);
+    }
+  }
+
+  createMarkers = (markersToCreate) => {
+    let markersArray = [];
+     for (let i = 0; i < markersToCreate.length; i++) {
        var marker = new window.google.maps.Marker({
-         position: locations[i].location,
+         position: markersToCreate[i].location,
          map: map,
-         title: locations[i].title,
+         title: markersToCreate[i].title,
          animation: window.google.maps.Animation.DROP,
-         venueId: locations[i].venueId
+         venueId: markersToCreate[i].venueId,
+         venueDetails: markersToCreate[i].venueDetails
     });
     this.addInfoWindow(marker);
     markersArray.push(marker);
   }
+  this.setState({
+    markers: markersArray
+  })
+  this.setState({
+    markers: markersArray
+  }, () => {
+    console.log(markersArray)
+    console.log(this.state.markers)
+  });
 }
 
 addInfoWindow(marker) {
+  console.log(marker)
+  const infowindowContent = `<div>
+    <h4>${marker.title}</h4>
+    <p>${marker.venueDetails.venue.location.city}, ${marker.venueDetails.venue.location.state}, ${marker.venueDetails.venue.location.country}</p>
+    <img src=${marker.venueDetails.venue.bestPhoto} width="300" />
+    <p>${marker.venueDetails.venue.rating}</p>
+    <p>${marker.venueDetails.venue.likes.count}</p>
+    <a href="${marker.venueDetails.venue.moreInfo}" target="_blank">More details</a>
+  </div>`
+
   var infowindow = new window.google.maps.InfoWindow({
-    content: ""
+    content: infowindowContent
   });
   marker.addListener('click', function() {
     this.setAnimation(window.google.maps.Animation.BOUNCE);
     setTimeout(() => {
          marker.setAnimation(null);
-       }, 2000);
+       }, 900);
     infowindow.open(map, marker);
   });
+}
+
+updateLocations(updatedLocations) {
+  this.setState({
+    locations: updatedLocations
+  })
+  this.addMarkers();
 }
 
   render() {
@@ -94,7 +173,11 @@ addInfoWindow(marker) {
       <div className="app">
       <Sidebar
         sidebar={ <Search
-          markers={ this.state.markers }
+          locations ={ this.state.locations }
+          allLocations={ this.state.allLocations }
+          onUpdateLocations = {(updatedLocations) => {
+            this.updateLocations(updatedLocations)
+            } }
           /> }
         open={this.state.sidebarOpen}
         onSetOpen={this.onSetSidebarOpen}

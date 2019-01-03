@@ -2,52 +2,57 @@ import React, { Component } from 'react';
 import './Search.css';
 import { Debounce } from 'react-throttle';
 import escapeRegExp from 'escape-string-regexp';
-import { locations } from '../locations';
 
 class Search extends Component {
   state = {
     query: '',
-    markers: this.props.markers,
-    showingLocations: []
-  }
-
-   componentWillMount() {
-     setTimeout(() => {
-       this.setState({
-         markers: this.props.markers
-       })
-     }, 1000);
+    locations: this.props.locations
   }
 
   updateQuery = (query) => {
     console.log(query)
     this.setState({ query: query.trim() })
+    this.updateLocations();
   }
 
    clearQuery = () => {
     this.setState({ query: '' })
   }
 
-  updateMarkers(showingLocations) {
+  updateLocations() {
+     let { query, showingLocations } = this.state;
+     const match = new RegExp(escapeRegExp(query), 'i');
+     showingLocations = this.props.allLocations.filter((location) => match.test(location.title));
     setTimeout(() => {
       this.setState({
-        markers: showingLocations
+        locations: showingLocations
       })
     }, 1000);
+    if (this.props.onUpdateLocations)
+      this.props.onUpdateLocations(showingLocations)
+  }
+
+  onChooseLocation(marker) {
+    let showingLocations = this.props.allLocations.filter((location) => marker.title === location.title);
+    setTimeout(() => {
+      this.setState({
+        locations: showingLocations
+      })
+    }, 1000);
+    if (this.props.onUpdateLocations)
+      this.props.onUpdateLocations(showingLocations)
   }
 
   render() {
-    console.log(this.state)
-    console.log(this.props)
-    let { query, markers, showingLocations } = this.state;
+    let { query, locations } = this.state;
+    let showingLocations = [];
 
     if (query) {
       const match = new RegExp(escapeRegExp(query), 'i');
-      showingLocations = markers.filter((location) => match.test(location.title))
-      this.updateMarkers(showingLocations);
+      showingLocations = this.props.allLocations.filter((location) => match.test(location.title))
     }
     else {
-      showingLocations = locations;
+      showingLocations = this.props.allLocations;
     }
 
     return (
@@ -62,7 +67,11 @@ class Search extends Component {
           <div className="search-results">
             {showingLocations.map((marker) => (
               <li key={marker.venueId} className="search-item">
-                <span className="search-item">{marker.title}</span>
+              <p
+                className="search-item"
+                onClick = {() => this.onChooseLocation(marker.title)}>
+                {marker.title}
+              </p>
               </li>
             ))}
           </div>
