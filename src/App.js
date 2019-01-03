@@ -4,6 +4,7 @@ import { Button, Glyphicon } from "react-bootstrap";
 import scriptLoader from 'react-async-script-loader'
 import "./App.css";
 import Map from "./components/Map";
+import Search from "./components/Search";
 
 const mql = window.matchMedia(`(min-width: 800px)`);
 let map = {};
@@ -18,6 +19,11 @@ mediaQueryChanged = this.mediaQueryChanged.bind(this);
  onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
 
  componentWillMount() {
+   if (window.innerWidth < 800) {
+       this.mediaQueryChanged();
+     }
+
+
    mql.addListener(this.mediaQueryChanged);
  }
 
@@ -47,7 +53,7 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
     return (
       <div className="app">
       <Sidebar
-        sidebar={<p>Sidebar content</p>}
+        sidebar={ <Search /> }
         open={this.state.sidebarOpen}
         onSetOpen={this.onSetSidebarOpen}
         docked={this.state.sidebarDocked}
