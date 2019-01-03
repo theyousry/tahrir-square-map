@@ -16,7 +16,9 @@ class Search extends Component {
   }
 
    clearQuery = () => {
-    this.setState({ query: '' })
+    this.setState({ query: '' }, () => {
+       this.updateLocations()
+   })
   }
 
   updateLocations() {
@@ -47,11 +49,12 @@ class Search extends Component {
     let { query, locations } = this.state;
     let showingLocations = [];
 
-    if (query) {
+    if (query.length > 0) {
       const match = new RegExp(escapeRegExp(query), 'i');
       showingLocations = this.props.allLocations.filter((location) => match.test(location.title))
     }
     else {
+      console.log(this.props.allLocations)
       showingLocations = this.props.allLocations;
     }
 
@@ -68,12 +71,20 @@ class Search extends Component {
             {showingLocations.map((location) => (
               <li key={location.venueId} className="search-item">
               <p
-                className="search-item"
+                className="search-item-name"
                 onClick = {() => this.props.onUpdateLocations([location])}>
                 {location.title}
               </p>
               </li>
             ))}
+          </div>
+          <div className="button-wrapper">
+            <button
+              type="button"
+              className="btn btn-primary all-locations-button"
+              onClick= {() => this.clearQuery()}>
+                Show all locations
+            </button>
           </div>
         </div>
     );
