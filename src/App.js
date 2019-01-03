@@ -45,9 +45,8 @@ mediaQueryChanged() {
 
 componentWillReceiveProps({ isScriptLoadSucceed }) {
   if(isScriptLoadSucceed) {
-    this.getInfoWindowsData();
     this.createMap();
-      this.addMarkers();
+    this.getInfoWindowsData();
     }
   }
 
@@ -62,33 +61,25 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
    // gets all locations data from foursquare
   getInfoWindowData(marker) {
     locations.forEach((location) => {
-   /*fetch(`https://api.foursquare.com/v2/venues/${marker.venueId}` +
+   fetch(`https://api.foursquare.com/v2/venues/${marker.venueId}` +
          `?client_id=EZEY30HLA40SXDIRAOP5K0J5F0LBCCWIA4COVDR51ZZ13CHJ` +
          `&client_secret=Z0CF3Y0N03BCPW44OVF4NTFVT3IQLF1H5KXBTX0PR23KNY4L` +
          `&v=20190103`)
          .then(response => response.json())
          .then(data => {
            if (data.meta.code === 200) {
-             //location.venueDetails = data;
-             console.log(data)
+             location.venueDetails = data.response;
            }
          }).catch(error => {
-           console.log(error);
-         }) */
-
-         var data = {
-           bestPhoto: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Cairo_opera_house.jpg",
-           rating: 8,
-           likes: 1000,
-           moreInfo: "https://en.wikipedia.org/wiki/Cairo_Opera_House"
-         }
-         data = JSON.parse(data);
-         location.venueDetails = data;
+           window.alert(`Couldn't get Foursquare data due to ${error}`);
+         })
      })
      this.setState({
        allLocations: locations
      }, () => {
-       console.log(this.state.allLocations)
+       setTimeout(() => {
+         this.addMarkers();
+       }, 1000);
      });
    }
 
@@ -132,14 +123,10 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
   })
   this.setState({
     markers: markersArray
-  }, () => {
-    console.log(markersArray)
-    console.log(this.state.markers)
-  });
-}
+  })
 
 addInfoWindow(marker) {
-  console.log(marker)
+  // add info window content
   const infowindowContent = `<div>
     <h4>${marker.title}</h4>
     <p>${marker.venueDetails.venue.location.city}, ${marker.venueDetails.venue.location.state}, ${marker.venueDetails.venue.location.country}</p>
@@ -157,6 +144,7 @@ addInfoWindow(marker) {
     setTimeout(() => {
          marker.setAnimation(null);
        }, 900);
+       setTimeout(function () { infowindow.close(); }, 5000);
     infowindow.open(map, marker);
   });
 }
@@ -164,8 +152,9 @@ addInfoWindow(marker) {
 updateLocations(updatedLocations) {
   this.setState({
     locations: updatedLocations
+  }, () =>
+    this.addMarkers();
   })
-  this.addMarkers();
 }
 
   render() {
