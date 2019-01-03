@@ -51,6 +51,10 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
       })
     }
   }
+  getUpdatedMarkers(updatedMarkers) {
+    console.log(updatedMarkers);
+  }
+
   createMap() {
     map = new window.google.maps.Map(document.getElementById('map'), {
       center: {lat: 30.043456, lng: 31.227104},
@@ -65,11 +69,10 @@ componentWillReceiveProps({ isScriptLoadSucceed }) {
          map: map,
          title: locations[i].title,
          animation: window.google.maps.Animation.DROP,
-         id: i
+         venueId: locations[i].venueId
     });
     this.addInfoWindow(marker);
     markersArray.push(marker);
-    console.log(markersArray)
   }
 }
 

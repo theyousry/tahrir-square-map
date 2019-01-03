@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import './Search.css';
 import { Debounce } from 'react-throttle';
+import escapeRegExp from 'escape-string-regexp';
 import { locations } from '../locations';
 
 class Search extends Component {
   state = {
-    markers: this.props.markers
+    query: '',
+    markers: this.props.markers,
+    showingLocations: []
   }
 
    componentWillMount() {
@@ -15,10 +18,38 @@ class Search extends Component {
        })
      }, 1000);
   }
+
+  updateQuery = (query) => {
+    console.log(query)
+    this.setState({ query: query.trim() })
+  }
+
+   clearQuery = () => {
+    this.setState({ query: '' })
+  }
+
+  updateMarkers(showingLocations) {
+    setTimeout(() => {
+      this.setState({
+        markers: showingLocations
+      })
+    }, 1000);
+  }
+
   render() {
     console.log(this.state)
     console.log(this.props)
-    const { markers } = this.state;
+    let { query, markers, showingLocations } = this.state;
+
+    if (query) {
+      const match = new RegExp(escapeRegExp(query), 'i');
+      showingLocations = markers.filter((location) => match.test(location.title))
+      this.updateMarkers(showingLocations);
+    }
+    else {
+      showingLocations = locations;
+    }
+
     return (
       <div>
       <div className="search-locations-bar">
@@ -29,9 +60,9 @@ class Search extends Component {
             </div>
           </div>
           <div className="search-results">
-            {markers.map((marker) => (
-              <li key={marker.id} className="search-item">
-                {marker.title}
+            {showingLocations.map((marker) => (
+              <li key={marker.venueId} className="search-item">
+                <span className="search-item">{marker.title}</span>
               </li>
             ))}
           </div>
