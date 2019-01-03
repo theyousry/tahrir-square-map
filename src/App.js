@@ -43,7 +43,7 @@ class App extends Component {
   }
 
   componentWillReceiveProps({ isScriptLoadSucceed }) {
-    if(isScriptLoadSucceed) {
+    if(isScriptLoadSucceed && typeof window.google && typeof window.google.maps ) {
       this.createMap();
       this.getInfoWindowsData();
     }
@@ -114,6 +114,7 @@ class App extends Component {
        venueId: markersToCreate[i].venueId,
        venueDetails: markersToCreate[i].venueDetails
      });
+     if(markersToCreate.length === 1) this.addInfoWindow(marker, true);
      this.addInfoWindow(marker);
      markersArray.push(marker);
    }
@@ -125,13 +126,11 @@ class App extends Component {
    })
  }
 
- addInfoWindow(marker) {
+ addInfoWindow(marker, open) {
    // add info window content
-   console.log(marker)
    let infowindowContent = '';
-   if(marker.venueDetails.venue) {
+   if(marker.venueDetails) {
      const photo = marker.venueDetails.venue.bestPhoto.prefix + 'width300' + marker.venueDetails.venue.bestPhoto.suffix;
-     console.log(photo)
      infowindowContent = `<div class="info-window">
        <h4>${marker.title}</h4>
        <p>${marker.venueDetails.venue.location.city}, ${marker.venueDetails.venue.location.state}, ${marker.venueDetails.venue.location.country}</p>
@@ -139,6 +138,7 @@ class App extends Component {
        <p class="info rating">Rating: ${marker.venueDetails.venue.rating}</p>
        <p class="info likes">Likes: ${marker.venueDetails.venue.likes.count}</p>
        <a href="${marker.venueDetails.venue.canonicalUrl}" target="_blank">More details</a>
+       <p>Places info powered by <a href="https://foursquare.com/" target="_blank">Foursquare</a></p>
      </div>`
    }
    else {
@@ -158,6 +158,7 @@ class App extends Component {
      infowindow.open(map, marker);
      setTimeout(function () { infowindow.close(); }, 5000);
    });
+   if (open) infowindow.open(map, marker);
  }
 
  updateLocations(updatedLocations) {
@@ -170,7 +171,7 @@ class App extends Component {
 
  render() {
    return (
-     <div className="app">
+     <div className="app" role="main">
        <Sidebar
          sidebar={
            <Search

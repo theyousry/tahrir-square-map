@@ -68,9 +68,11 @@ class Search extends Component {
     return (
       <div>
         <div className="search-locations-bar">
-          <div className="search-locations-input-wrapper">
+          <div className="search-locations-input-wrapper" tabIndex="1">
             <Debounce time='1000' handler="onChange">
               <input
+              name="searchLocation"
+              aria-labelledby='filterLocation'
                 type = "text"
                 placeholder = "Search location"
                 onChange = {(event) => this.updateQuery(event.target.value)}
@@ -82,8 +84,9 @@ class Search extends Component {
           {showingLocations.map((location) => (
             <li key={location.venueId} className="search-item">
               <p
-                className="search-item-name"
-                onClick = {() => this.onClickLocation(location)}>
+                className="search-item-name" tabIndex="0"
+                onClick = {() => this.onClickLocation(location)}
+                onKeyPress = {() => this.onClickLocation(location)}>
                 {location.title}
               </p>
             </li>
@@ -93,6 +96,8 @@ class Search extends Component {
           <button
             type="button"
             className="btn btn-success all-locations-button"
+            tabIndex="2"
+            aria-label="Show all locations"
             onClick= {() => this.clearQuery()}>
               Show all locations
           </button>

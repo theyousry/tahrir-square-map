@@ -4,7 +4,7 @@ import './Map.css';
 class Map extends Component {
   render() {
     return (
-      <div id="map" role="application">
+      <div id="map" role="application" tabIndex="-1">
       </div>
     );
   }
