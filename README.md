@@ -8,4 +8,5 @@ I've developed a project of **a single-page web application** featuring a map of
 ##### Clone or Download this Repository
 
 * install all project dependencies with `npm i`
+* create a production build `npm run build`
 * start the development server with `npm start`
